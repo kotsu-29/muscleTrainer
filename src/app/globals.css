@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fff2f7;
+  --foreground: #2b2140;
+  --color-primary: #ff6b8b;
+  --color-secondary: #4d96ff;
+  --color-accent: #ffd93d;
+  --color-success: #6bcb77;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-success: var(--color-success);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 217, 61, 0.35), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(77, 150, 255, 0.3), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(255, 107, 139, 0.25), transparent 55%),
+    var(--background);
+  color: var(--foreground);
+  font-family: "Hiragino Maru Gothic ProN", "Rounded Mgen+ 1c", "Yu Gothic",
+    ui-rounded, system-ui, -apple-system, sans-serif;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}

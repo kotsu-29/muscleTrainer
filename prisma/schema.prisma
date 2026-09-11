@@ -1,0 +1,42 @@
+// Prisma schema for muscle-trainer
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model BodyPart {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  order     Int        @default(0)
+  color     String
+  exercises Exercise[]
+}
+
+model Exercise {
+  id         String        @id @default(cuid())
+  name       String        @unique
+  bodyPart   BodyPart      @relation(fields: [bodyPartId], references: [id])
+  bodyPartId String
+  createdAt  DateTime      @default(now())
+  records    WorkoutLog[]
+}
+
+model WorkoutLog {
+  id         String   @id @default(cuid())
+  date       DateTime
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+  weight     Float
+  reps       Int
+  sets       Int
+  memo       String?
+  createdAt  DateTime @default(now())
+
+  @@index([date])
+  @@index([exerciseId])
+}
