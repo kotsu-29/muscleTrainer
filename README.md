@@ -38,3 +38,37 @@ http://localhost:3000 をスマートフォン等のブラウザから開いて�
 npx prisma migrate dev --name <変更内容>
 npx prisma generate
 ```
+
+## 本番デプロイ (Vercel + Turso)
+
+外出先からもアクセスできるようにする場合の手順。ローカルのSQLiteファイルはVercelのようなサーバーレス環境では使えないため、SQLite互換のクラウドDB「[Turso](https://turso.tech/)」を使う。
+
+### 1. Turso でデータベースを作成
+
+1. https://turso.tech/ でアカウント作成し、[Turso CLI](https://docs.turso.tech/cli/installation) をインストール
+2. データベースを作成し、接続情報を取得
+   ```bash
+   turso db create musclelog
+   turso db show musclelog --url        # → TURSO_DATABASE_URL
+   turso db tokens create musclelog      # → TURSO_AUTH_TOKEN
+   ```
+3. スキーマを反映(ローカルから実行)
+   ```bash
+   TURSO_DATABASE_URL="<上のURL>" TURSO_AUTH_TOKEN="<上のトークン>" npx prisma migrate deploy
+   TURSO_DATABASE_URL="<上のURL>" TURSO_AUTH_TOKEN="<上のトークン>" npx prisma db seed
+   ```
+   ※ `prisma migrate deploy` がTursoに対応していない場合は、Turso CLIで直接SQLを流し込む代替手段もある:
+   ```bash
+   turso db shell musclelog < prisma/migrations/20260910122706_init/migration.sql
+   ```
+
+### 2. Vercel にデプロイ
+
+1. https://vercel.com/ でアカウント作成し、GitHubリポジトリ `kotsu-29/muscleTrainer` をImport
+2. プロジェクトの **Settings → Environment Variables** に以下を追加
+   - `TURSO_DATABASE_URL`
+   - `TURSO_AUTH_TOKEN`
+   - `APP_PASSWORD` — 好きなパスワードを設定すると、アクセス時にBasic認証(ユーザー名: `musclelog`)がかかる。他人に見られたくない場合は必須
+3. Deploy
+
+デプロイ後に発行されるURL(例: `https://muscle-trainer.vercel.app`)にスマートフォンから直接アクセス可能。`APP_PASSWORD`を設定した場合はユーザー名 `musclelog` と設定したパスワードの入力を求められる。
